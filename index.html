@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle</title>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(145deg, #fff0f5 0%, #ffffff 40%, #ffe4ef 70%, #fff8fa 100%);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ff0080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,0,128,0.15);
+    padding: 2.5rem 2rem;
+  }
+
+  .cursive {
+    font-family: 'Pinyon Script', cursive;
+    font-size: 1.5rem;
+    color: #ff0080;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  input[type="date"],
+  input[type="time"],
+  input[type="text"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,0,128,0.3);
+    color: #ff0080;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.2rem;
+    outline: none;
+  }
+
+  input::placeholder { color: rgba(255,0,128,0.3); }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(20%) sepia(100%) saturate(500%) hue-rotate(300deg) brightness(1.2);
+    cursor: pointer;
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+  .note { font-size: 0.62rem; opacity: 0.4; margin-top: 0.3rem; }
+
+  .btn {
+    margin-top: 2rem;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #ff0080;
+    color: #ff0080;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    padding: 0.8rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .greeting {
+    font-size: 0.82rem;
+    line-height: 1.75;
+    opacity: 0.65;
+    margin-bottom: 1.75rem;
+  }
+
+  .chat {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+
+  .bubble-user {
+    font-family: 'Pinyon Script', cursive;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    opacity: 0.7;
+    text-align: right;
+  }
+
+  .bubble-oracle {
+    font-size: 0.92rem;
+    line-height: 1.85;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,0,128,0.12);
+  }
+
+  .thinking {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.45;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,0,128,0.12);
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    border-top: 1px solid rgba(255,0,128,0.12);
+    padding-top: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,0,128,0.3);
+    color: #ff0080;
+    font-family: 'Pinyon Script', cursive;
+    font-size: 1.3rem;
+    padding: 0.3rem 0.2rem;
+    outline: none;
+    resize: none;
+    line-height: 1.5;
+  }
+
+  textarea::placeholder { color: rgba(255,0,128,0.3); font-family: 'Pinyon Script', cursive; }
+
+  .send-btn {
+    background: transparent;
+    border: 1px solid #ff0080;
+    color: #ff0080;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .error { font-size: 0.75rem; opacity: 0.8; margin-top: 0.5rem; }
+  #birth-section { display: block; }
+  #chat-section { display: none; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div id="birth-section">
+    <label class="cursive">Date of birth</label>
+    <input type="date" id="dob" />
+    <div class="row">
+      <div>
+        <label class="cursive">Time of birth</label>
+        <input type="time" id="tob" />
+        <div class="note">leave blank if unknown</div>
+      </div>
+      <div>
+        <label class="cursive">City of birth</label>
+        <input type="text" id="city" placeholder="Chicago, IL" />
+      </div>
+    </div>
+    <button class="btn" onclick="startChat()">Enter</button>
+    <div class="error" id="birth-error"></div>
+  </div>
+
+  <div id="chat-section">
+    <div class="greeting" id="greeting"></div>
+    <div class="chat" id="chat"></div>
+    <div class="thinking" id="thinking" style="display:none">consulting the stars...</div>
+    <div class="input-row">
+      <textarea id="question" placeholder="ask anything..." rows="2" onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendQuestion()">Ask</button>
+    </div>
+    <div class="error" id="chat-error"></div>
+  </div>
+
+</div>
+
+<script>
+  let userData = null;
+  let messages = [];
+
+  function getSunSign(dateStr) {
+    const d = new Date(dateStr + "T12:00:00");
+    const m = d.getMonth() + 1, day = d.getDate();
+    if ((m===3&&day>=21)||(m===4&&day<=19)) return "Aries";
+    if ((m===4&&day>=20)||(m===5&&day<=20)) return "Taurus";
+    if ((m===5&&day>=21)||(m===6&&day<=20)) return "Gemini";
+    if ((m===6&&day>=21)||(m===7&&day<=22)) return "Cancer";
+    if ((m===7&&day>=23)||(m===8&&day<=22)) return "Leo";
+    if ((m===8&&day>=23)||(m===9&&day<=22)) return "Virgo";
+    if ((m===9&&day>=23)||(m===10&&day<=22)) return "Libra";
+    if ((m===10&&day>=23)||(m===11&&day<=21)) return "Scorpio";
+    if ((m===11&&day>=22)||(m===12&&day<=21)) return "Sagittarius";
+    if ((m===12&&day>=22)||(m===1&&day<=19)) return "Capricorn";
+    if ((m===1&&day>=20)||(m===2&&day<=18)) return "Aquarius";
+    return "Pisces";
+  }
+
+  function startChat() {
+    const dob = document.getElementById("dob").value;
+    if (!dob) { document.getElementById("birth-error").textContent = "Please enter your date of birth."; return; }
+    const tob = document.getElementById("tob").value;
+    const city = document.getElementById("city").value.trim();
+    const sign = getSunSign(dob);
+    const d = new Date(dob + "T12:00:00");
+    const formatted = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    userData = { dob, tob, city, sign, formatted };
+    let parts = [`${formatted} — ${sign}.`];
+    if (tob && city) parts.push(`Born at ${tob} in ${city}.`);
+    else if (tob) parts.push(`Born at ${tob}.`);
+    else if (city) parts.push(`Born in ${city}.`);
+    document.getElementById("greeting").textContent = parts.join(" ");
+    document.getElementById("birth-section").style.display = "none";
+    document.getElementById("chat-section").style.display = "block";
+    document.getElementById("question").focus();
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
+  }
+
+  function appendBubble(type, text) {
+    const chat = document.getElementById("chat");
+    const div = document.createElement("div");
+    div.className = type === "user" ? "bubble-user" : "bubble-oracle";
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function sendQuestion() {
+    const q = document.getElementById("question").value.trim();
+    if (!q) return;
+    document.getElementById("chat-error").textContent = "";
+    document.getElementById("question").value = "";
+    document.getElementById("send-btn").disabled = true;
+    document.getElementById("thinking").style.display = "block";
+    appendBubble("user", q);
+
+    let birthContext = `The seeker was born on ${userData.formatted}, sun sign ${userData.sign}.`;
+    if (userData.tob && userData.city) birthContext += ` Birth time: ${userData.tob} in ${userData.city}. Estimate their rising sign and reference it where relevant.`;
+    else if (userData.tob) birthContext += ` Birth time: ${userData.tob}.`;
+    else if (userData.city) birthContext += ` Born in ${userData.city}.`;
+
+    const system = `You are an astrology oracle — knowledgeable, mystical, and direct. You have deep knowledge of both Western tropical astrology (Whole Sign houses) and Vedic Jyotish. ${birthContext} Speak in a clear, grounded tone with occasional poetic depth. Be specific and avoid vague generalities. Keep responses to 3–5 sentences unless more depth is genuinely needed. No bullet points. Never break character.`;
+
+    messages.push({ role: "user", content: q });
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": window.ANTHROPIC_API_KEY || "",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1024, system, messages }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const reply = data.content?.map(b => b.text || "").join("") || "The stars are silent tonight.";
+      messages.push({ role: "assistant", content: reply });
+      appendBubble("oracle", reply);
+    } catch (e) {
+      document.getElementById("chat-error").textContent = "Something went wrong. Try again.";
+      messages.pop();
+    }
+
+    document.getElementById("thinking").style.display = "none";
+    document.getElementById("send-btn").disabled = false;
+    document.getElementById("question").focus();
+  }
+</script>
+</body>
+</html>
